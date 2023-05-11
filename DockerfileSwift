@@ -1,0 +1,24 @@
+FROM ubuntu:22.04
+
+ENV TZ=Europe/Warsaw
+
+
+RUN apt-get update && apt-get install -y wget vim git curl
+
+RUN apt-get install -y libxml2 libcurl4 libncurses5 zip libz-dev build-essential unzip
+
+RUN wget https://swift.org/builds/swift-5.8-release/ubuntu2204/swift-5.8-RELEASE/swift-5.8-RELEASE-ubuntu22.04.tar.gz && tar -xvzf swift-5.8-RELEASE* && mv swift-5.8-RELEASE-ubuntu22.04 /usr/share/swift
+ENV PATH=/usr/share/swift/usr/bin:$PATH
+RUN git clone https://github.com/vapor/toolbox.git && cd toolbox && git checkout -b 18.3.2 && make build && mv .build/release/vapor /usr/local/bin/ && chmod 755 /usr/local/bin/vapor
+
+RUN useradd -ms /bin/bash student 
+RUN adduser student sudo
+
+EXPOSE 80
+
+VOLUME /home/student/projobj/
+
+USER student
+WORKDIR /home/student/
+RUN mkdir projobj
+WORKDIR /home/student/projobj
